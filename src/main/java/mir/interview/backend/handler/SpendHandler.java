@@ -8,6 +8,7 @@ import java.util.UUID;
 import com.aerospike.client.AerospikeClient;
 import com.aerospike.client.Bin;
 import com.aerospike.client.Key;
+import com.aerospike.client.Record;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 
@@ -32,8 +33,18 @@ public class SpendHandler implements Handler {
 
         String accountUuid = JWT.require(Algorithm.HMAC256("secret")).withIssuer("amcbrearty").build().verify(token).getClaim("uuid").asString();
 
-        ctx.parse(fromJson(Spend.class)).then(spend -> {
+        ctx.parse(fromJson(Spend.class)).then((Spend spend) -> {
             String spendUuid = UUID.randomUUID().toString();
+
+            Key accountKey = new Key("test", "account", accountUuid);
+            Record balanceRecord = aerospikeClient.get(null, accountKey);
+
+            Double currentBalance = Double.parseDouble(balanceRecord.bins.get("balance").toString());
+            Double updatedBalance = currentBalance - spend.getAmount();
+
+            Bin balanceBin = new Bin("balance", updatedBalance);
+
+            aerospikeClient.put(null, accountKey, balanceBin);
 
             // Namespace change from test in the aerospace configuration is preferred
             Key spendKey = new Key("test", "spend", spendUuid);

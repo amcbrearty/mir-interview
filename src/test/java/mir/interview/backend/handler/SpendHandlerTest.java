@@ -19,24 +19,31 @@ public class SpendHandlerTest extends BaseHandlerTest {
             "}";
 
     @Test
-    public void spendOnly() throws Exception {
+    public void spendAndReduceBalance() throws Exception {
         EmbeddedApp.fromHandlers(chain -> chain
             .path("login", new LoginHandler(aerospikeClient))
+            .path("balance", new BalanceHandler(aerospikeClient))
             .path("spend", new SpendHandler(aerospikeClient))
         ).test(httpClient -> {
 
             // Retrieve a valid login token
             String token = with(httpClient.post("login").getBody().getText()).getString("token");
 
-            ReceivedResponse response = httpClient
+            ReceivedResponse spendResponse = httpClient
                 .request("spend", requestSpec -> {
                     requestSpec.method(HttpMethod.POST);
                     requestSpec.getBody().type("application/json");
                     requestSpec.getBody().text(spendJson);
                     requestSpec.getHeaders().add("Authorization", "Bearer " + token);
                 });
+            assertEquals(200, spendResponse.getStatusCode());
 
-            assertEquals(200, response.getStatusCode());
+            ReceivedResponse balanceResponse = httpClient
+                .request("balance", requestSpec -> requestSpec.getHeaders().add("Authorization", "Bearer " + token));
+
+            assertEquals(200,balanceResponse.getStatusCode());
+            assertEquals("1900.0", with(balanceResponse.getBody().getText()).getString("balance"));
+            assertEquals("GBP", with(balanceResponse.getBody().getText()).getString("currency"));
         });
     }
 }
