@@ -1,6 +1,9 @@
 # mir-interview
 MIR Interview
 
+## Time spent
+https://wakatime.com/@f49e45c4-505e-4b31-82fa-9f3dacc6dada/projects/zwrqhznlfj?start=2016-12-30&end=2017-01-05    
+
 ## Coding Test
 
 ### The task
