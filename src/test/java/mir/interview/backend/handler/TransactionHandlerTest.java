@@ -7,6 +7,7 @@ import org.junit.Test;
 import ratpack.http.HttpMethod;
 import ratpack.http.client.ReceivedResponse;
 import ratpack.test.embed.EmbeddedApp;
+import ratpack.test.http.TestHttpClient;
 
 public class TransactionHandlerTest extends BaseHandlerTest {
 
@@ -37,25 +38,24 @@ public class TransactionHandlerTest extends BaseHandlerTest {
             assertEquals("2000.0", with(initialBalanceResponse.getBody().getText()).getString("balance"));
             assertEquals("GBP", with(initialBalanceResponse.getBody().getText()).getString("currency"));
 
-            ReceivedResponse spendResponse = httpClient
-                .request("spend", requestSpec -> {
-                    requestSpec.method(HttpMethod.POST);
-                    requestSpec.getBody().type("application/json");
-                    requestSpec.getBody().text(spendJson);
-                    requestSpec.getHeaders().add("Authorization", "Bearer " + token);
-                });
-
-            assertEquals(200, spendResponse.getStatusCode());
-
-            ReceivedResponse balanceResponse = httpClient
-                .request("balance", requestSpec -> requestSpec.getHeaders().add("Authorization", "Bearer " + token));
-
-            assertEquals(200,balanceResponse.getStatusCode());
-            assertEquals("1900.0", with(balanceResponse.getBody().getText()).getString("balance"));
-            assertEquals("GBP", with(balanceResponse.getBody().getText()).getString("currency"));
+            spend(httpClient, token);
+            spend(httpClient, token);
 
             ReceivedResponse transactionsResponse = httpClient
                 .request("transactions", requestSpec -> requestSpec.getHeaders().add("Authorization", "Bearer " + token));
+
+            System.out.println(transactionsResponse.getBody().getText());
         });
+    }
+
+    private void spend(TestHttpClient httpClient, String token) {
+        httpClient
+            .request("spend", requestSpec -> {
+                requestSpec.method(HttpMethod.POST);
+                requestSpec.getBody().type("application/json");
+                requestSpec.getBody().text(spendJson);
+                requestSpec.getHeaders().add("Authorization", "Bearer " + token);
+            });
+
     }
 }

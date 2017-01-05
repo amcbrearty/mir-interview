@@ -20,6 +20,7 @@ public class BalanceHandler implements Handler {
         String authorisationHeader = ctx.getRequest().getHeaders().get("Authorization");
         String accountUuid = AuthService.getUuid(AuthService.getToken(authorisationHeader));
 
+        ctx.getResponse().contentType("application/json");
         ctx.byMethod(method -> method.get(() -> ctx.render(json(dbService.findBalance(accountUuid)))));
     }
 }

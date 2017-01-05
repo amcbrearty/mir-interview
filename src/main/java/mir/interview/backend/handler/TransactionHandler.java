@@ -1,5 +1,10 @@
 package mir.interview.backend.handler;
 
+import static ratpack.jackson.Jackson.json;
+
+import java.util.List;
+
+import mir.interview.backend.domain.Spend;
 import mir.interview.backend.service.AuthService;
 import mir.interview.backend.service.DbService;
 import ratpack.handling.Context;
@@ -18,7 +23,11 @@ public class TransactionHandler implements Handler {
         String authorisationHeader = ctx.getRequest().getHeaders().get("Authorization");
         String accountUuid = AuthService.getUuid(AuthService.getToken(authorisationHeader));
 
-        dbService.findTransactions(accountUuid);
+        List<Spend> transactions = dbService.findTransactions(accountUuid);
 
+        transactions.forEach(System.out::println);
+
+        ctx.getResponse().contentType("application/json");
+        ctx.byMethod(method -> method.get(() -> ctx.render(json(transactions))));
     }
 }

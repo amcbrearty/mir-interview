@@ -1,6 +1,6 @@
 package mir.interview.backend.service;
 
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -8,6 +8,10 @@ import com.aerospike.client.AerospikeClient;
 import com.aerospike.client.Bin;
 import com.aerospike.client.Key;
 import com.aerospike.client.Record;
+import com.aerospike.client.query.Filter;
+import com.aerospike.client.query.IndexType;
+import com.aerospike.client.query.RecordSet;
+import com.aerospike.client.query.Statement;
 
 import mir.interview.backend.domain.Balance;
 import mir.interview.backend.domain.Spend;
@@ -39,6 +43,7 @@ public class DbService {
 
     public DbService() {
         aerospikeClient = new AerospikeClient(serverHost, serverPort);
+        aerospikeClient.createIndex(null, NAMESPACE, SPEND_SET, "spend_account_idx", UUID_BIN, IndexType.STRING);
     }
 
     public void createAccount(String accountUuid) {
@@ -85,11 +90,32 @@ public class DbService {
         aerospikeClient.put(null, spendKey, accountBin, dateBin, descriptionBin, amountBin, currencyBin);
     }
 
-    public void closeDb() {
-        aerospikeClient.close();
+    public List<Spend> findTransactions(String accountUuid) {
+        Statement transactionQuery = new Statement();
+
+        transactionQuery.setNamespace(NAMESPACE);
+        transactionQuery.setSetName(SPEND_SET);
+        transactionQuery.setFilters(Filter.equal(UUID_BIN, accountUuid));
+
+        RecordSet transactionQueryRs = aerospikeClient.query(null, transactionQuery);
+
+        List<Spend> transactions = new ArrayList();
+
+        transactionQueryRs.forEach(items -> {
+            String date = items.record.bins.get(DATE_BIN).toString();
+            String description = items.record.bins.get(DESCRIPTION_BIN).toString();
+            Double amount = Double.valueOf(items.record.bins.get(AMOUNT_BIN).toString());
+            String currency = items.record.bins.get(CURRENCY_BIN).toString();
+
+            Spend spend = new Spend(null, description, amount, currency);
+
+            transactions.add(spend);
+        });
+
+        return transactions;
     }
 
-    public List<Spend> findTransactions(String accountUuid) {
-        return Collections.EMPTY_LIST;
+    public void closeDb() {
+        aerospikeClient.close();
     }
 }

@@ -37,4 +37,9 @@ public class Spend {
     public String getCurrency() {
         return this.currency;
     }
+
+    @Override
+    public String toString() {
+        return this.getDescription();
+    }
 }
