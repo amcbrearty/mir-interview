@@ -2,35 +2,24 @@ package mir.interview.backend.handler;
 
 import static ratpack.jackson.Jackson.json;
 
-import com.aerospike.client.AerospikeClient;
-import com.aerospike.client.Key;
-import com.aerospike.client.Record;
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.algorithms.Algorithm;
-
-import mir.interview.backend.domain.Balance;
+import mir.interview.backend.service.AuthService;
+import mir.interview.backend.service.DbService;
 import ratpack.handling.Context;
 import ratpack.handling.Handler;
 
 public class BalanceHandler implements Handler {
 
-    private AerospikeClient aerospikeClient;
+    private DbService dbService;
 
-    public BalanceHandler(AerospikeClient aerospikeClient) {
-        this.aerospikeClient = aerospikeClient;
+    public BalanceHandler(DbService dbService) {
+        this.dbService = dbService;
     }
 
     @Override
     public void handle(Context ctx) throws Exception {
         String authorisationHeader = ctx.getRequest().getHeaders().get("Authorization");
-        String[] splitHeader = authorisationHeader.split("Bearer ");
-        String token = splitHeader[1];
+        String accountUuid = AuthService.getUuid(AuthService.getToken(authorisationHeader));
 
-        String uuid = JWT.require(Algorithm.HMAC256("secret")).withIssuer("amcbrearty").build().verify(token).getClaim("uuid").asString();
-
-        Key key = new Key("test", "account", uuid);
-        Record record = aerospikeClient.get(null, key);
-
-        ctx.byMethod(method -> method.get(() -> ctx.render(json(new Balance(record.bins.get("balance").toString(), record.bins.get("currency").toString())))));
+        ctx.byMethod(method -> method.get(() -> ctx.render(json(dbService.findBalance(accountUuid)))));
     }
 }

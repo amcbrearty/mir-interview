@@ -12,8 +12,8 @@ public class BalanceHandlerTest extends BaseHandlerTest {
     @Test
     public void testGetInitialBalance() throws Exception {
         EmbeddedApp.fromHandlers(chain -> chain
-            .path("login", new LoginHandler(aerospikeClient))
-            .path("balance", new BalanceHandler(aerospikeClient))
+            .path("login", new LoginHandler(dbService))
+            .path("balance", new BalanceHandler(dbService))
         ).test(httpClient -> {
 
             // Retrieve a valid login token

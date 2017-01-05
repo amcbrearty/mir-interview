@@ -4,39 +4,26 @@ import static ratpack.jackson.Jackson.json;
 
 import java.util.UUID;
 
-import com.aerospike.client.AerospikeClient;
-import com.aerospike.client.Bin;
-import com.aerospike.client.Key;
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.algorithms.Algorithm;
-
 import mir.interview.backend.domain.Token;
+import mir.interview.backend.service.AuthService;
+import mir.interview.backend.service.DbService;
 import ratpack.handling.Context;
 import ratpack.handling.Handler;
 
 public class LoginHandler implements Handler {
 
-    private AerospikeClient aerospikeClient;
+    private DbService dbService;
 
-    public LoginHandler(AerospikeClient aerospikeClient) {
-        this.aerospikeClient = aerospikeClient;
+    public LoginHandler(DbService dbService) {
+        this.dbService = dbService;
     }
 
     @Override
     public void handle(Context ctx) throws Exception {
-        String uuid = UUID.randomUUID().toString();
+        String uuid =  UUID.randomUUID().toString();
+        String token = AuthService.createToken(uuid);
 
-        String token = JWT.create()
-            .withClaim("uuid", uuid)
-            .withIssuer("amcbrearty")
-            .sign(Algorithm.HMAC256("secret"));
-
-        // Namespace change from test in the aerospace configuration is preferred
-        Key accountKey = new Key("test", "account", uuid);
-        Bin accountBalance = new Bin("balance", 2000.0);
-        Bin accountCurrency = new Bin("currency", "GBP");
-
-        aerospikeClient.put(null, accountKey, accountBalance, accountCurrency);
+        dbService.createAccount(uuid);
 
         ctx.byMethod(method -> method.post(() -> ctx.render(json(new Token(token)))));
     }

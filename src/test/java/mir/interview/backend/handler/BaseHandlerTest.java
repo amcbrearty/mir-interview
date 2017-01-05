@@ -2,6 +2,7 @@ package mir.interview.backend.handler;
 
 import com.aerospike.client.AerospikeClient;
 
+import mir.interview.backend.service.DbService;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 
@@ -14,15 +15,17 @@ public class BaseHandlerTest {
     private static final int serverPort = 3000;
 
     protected static AerospikeClient aerospikeClient;
+    protected static DbService dbService;
 
     @BeforeClass
-    public static void connectToAerospikeClient() {
+    public static void connectToDb() {
         aerospikeClient = new AerospikeClient(serverHost, serverPort);
+        dbService = new DbService();
     }
 
     @AfterClass
-    public static void closeAerospikeClient() {
+    public static void closeDb() {
         aerospikeClient.close();
+        dbService.closeDb();
     }
-
 }

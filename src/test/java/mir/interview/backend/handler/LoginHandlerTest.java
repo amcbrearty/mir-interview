@@ -17,7 +17,7 @@ public class LoginHandlerTest extends BaseHandlerTest {
 
     @Test
     public void testLoginPost() throws Exception {
-        EmbeddedApp.fromHandler(new LoginHandler(aerospikeClient))
+        EmbeddedApp.fromHandler(new LoginHandler(dbService))
             .test(httpClient -> {
                 String token = with(httpClient.post().getBody().getText()).getString("token");
 
@@ -36,7 +36,7 @@ public class LoginHandlerTest extends BaseHandlerTest {
 
     @Test
     public void testLoginGet() throws Exception {
-        EmbeddedApp.fromHandler(new LoginHandler(aerospikeClient))
+        EmbeddedApp.fromHandler(new LoginHandler(dbService))
             .test(httpClient -> assertEquals(405, httpClient.get().getStatusCode()));
     }
 }

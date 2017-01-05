@@ -21,9 +21,9 @@ public class SpendHandlerTest extends BaseHandlerTest {
     @Test
     public void spendAndReduceBalance() throws Exception {
         EmbeddedApp.fromHandlers(chain -> chain
-            .path("login", new LoginHandler(aerospikeClient))
-            .path("balance", new BalanceHandler(aerospikeClient))
-            .path("spend", new SpendHandler(aerospikeClient))
+            .path("login", new LoginHandler(dbService))
+            .path("balance", new BalanceHandler(dbService))
+            .path("spend", new SpendHandler(dbService))
         ).test(httpClient -> {
 
             // Retrieve a valid login token
