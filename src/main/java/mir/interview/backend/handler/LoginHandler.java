@@ -16,6 +16,12 @@ import ratpack.handling.Handler;
 
 public class LoginHandler implements Handler {
 
+    private AerospikeClient aerospikeClient;
+
+    public LoginHandler(AerospikeClient aerospikeClient) {
+        this.aerospikeClient = aerospikeClient;
+    }
+
     @Override
     public void handle(Context ctx) throws Exception {
         String uuid = UUID.randomUUID().toString();
@@ -25,15 +31,12 @@ public class LoginHandler implements Handler {
             .withIssuer("amcbrearty")
             .sign(Algorithm.HMAC256("secret"));
 
-        AerospikeClient client = new AerospikeClient("172.28.128.3", 3000);
-
         // Namespace change from test in the aerospace configuration is preferred
         Key accountKey = new Key("test", "account", uuid);
         Bin accountBalance = new Bin("balance", 2000);
         Bin accountCurrency = new Bin("currency", "GBP");
 
-        client.put(null, accountKey, accountBalance, accountCurrency);
-        client.close();
+        aerospikeClient.put(null, accountKey, accountBalance, accountCurrency);
 
         ctx.byMethod(method -> method.post(() -> ctx.render(json(new Token(token)))));
     }

@@ -1,6 +1,5 @@
 import static org.junit.Assert.assertEquals;
 
-import mir.interview.backend.handler.LoginHandler;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import ratpack.handling.Context;
@@ -20,7 +19,6 @@ public class ExploratoryTest {
     public static void configureServer() throws Exception {
         server = RatpackServer.of(spec -> spec
             .handlers(chain -> chain
-                .path("login", new LoginHandler())
                 .all(Context::next)
                 .all(ctx -> ctx
                     .byMethod(method -> method
@@ -54,15 +52,5 @@ public class ExploratoryTest {
     @Test
     public void testDelete() throws Exception {
         embeddedApp.test(testHttpClient -> assertEquals("DELETE", testHttpClient.deleteText()));
-    }
-
-    @Test
-    public void testLoginPost() throws Exception {
-        embeddedApp.test(httpClient -> assertEquals("login", httpClient.post("login").getBody().getText()));
-    }
-
-    @Test
-    public void testLoginGet() throws Exception {
-        embeddedApp.test(httpClient -> assertEquals("", httpClient.get("login").getBody().getText()));
     }
 }

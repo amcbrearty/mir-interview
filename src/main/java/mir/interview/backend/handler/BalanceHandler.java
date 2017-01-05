@@ -14,13 +14,17 @@ import ratpack.handling.Handler;
 
 public class BalanceHandler implements Handler {
 
+    private AerospikeClient aerospikeClient;
+
+    public BalanceHandler(AerospikeClient aerospikeClient) {
+        this.aerospikeClient = aerospikeClient;
+    }
+
     @Override
     public void handle(Context ctx) throws Exception {
         String authorisationHeader = ctx.getRequest().getHeaders().get("Authorization");
         String[] splitHeader = authorisationHeader.split("Bearer ");
         String token = splitHeader[1];
-
-        AerospikeClient aerospikeClient = new AerospikeClient("172.28.128.3", 3000);
 
         String uuid = JWT.require(Algorithm.HMAC256("secret")).withIssuer("amcbrearty").build().verify(token).getClaim("uuid").asString();
 
