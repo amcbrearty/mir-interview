@@ -22,8 +22,8 @@ public class BalanceHandlerTest extends BaseHandlerTest {
             ReceivedResponse response = httpClient
                 .request("balance", requestSpec -> requestSpec.getHeaders().add("Authorization", "Bearer " + token));
 
-            assertEquals(200,response.getStatusCode());
-            assertEquals("2000", with(response.getBody().getText()).getString("balance"));
+            assertEquals(200, response.getStatusCode());
+            assertEquals("2000.0", with(response.getBody().getText()).getString("balance"));
             assertEquals("GBP", with(response.getBody().getText()).getString("currency"));
         });
     }

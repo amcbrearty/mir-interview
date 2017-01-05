@@ -29,6 +29,13 @@ public class SpendHandlerTest extends BaseHandlerTest {
             // Retrieve a valid login token
             String token = with(httpClient.post("login").getBody().getText()).getString("token");
 
+            ReceivedResponse initialBalanceResponse = httpClient
+                .request("balance", requestSpec -> requestSpec.getHeaders().add("Authorization", "Bearer " + token));
+
+            assertEquals(200, initialBalanceResponse.getStatusCode());
+            assertEquals("2000.0", with(initialBalanceResponse.getBody().getText()).getString("balance"));
+            assertEquals("GBP", with(initialBalanceResponse.getBody().getText()).getString("currency"));
+
             ReceivedResponse spendResponse = httpClient
                 .request("spend", requestSpec -> {
                     requestSpec.method(HttpMethod.POST);

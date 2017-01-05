@@ -29,7 +29,7 @@ public class LoginHandlerTest extends BaseHandlerTest {
 
                 assertTrue("Balance not created", record.bins.containsKey("balance"));
                 assertTrue("Currency not created", record.bins.containsKey("currency"));
-                assertEquals("Initial balance incorrect", "2000", record.bins.get("balance").toString());
+                assertEquals("Initial balance incorrect", "2000.0", record.bins.get("balance").toString());
                 assertEquals("Initial currency incorrect", "GBP", record.bins.get("currency"));
             });
     }

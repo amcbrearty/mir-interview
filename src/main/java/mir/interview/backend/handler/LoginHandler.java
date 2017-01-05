@@ -33,7 +33,7 @@ public class LoginHandler implements Handler {
 
         // Namespace change from test in the aerospace configuration is preferred
         Key accountKey = new Key("test", "account", uuid);
-        Bin accountBalance = new Bin("balance", 2000);
+        Bin accountBalance = new Bin("balance", 2000.0);
         Bin accountCurrency = new Bin("currency", "GBP");
 
         aerospikeClient.put(null, accountKey, accountBalance, accountCurrency);
