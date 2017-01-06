@@ -1,21 +1,22 @@
+import mir.interview.backend.handler.BalanceHandler;
+import mir.interview.backend.handler.LoginHandler;
+import mir.interview.backend.handler.SpendHandler;
+import mir.interview.backend.handler.TransactionHandler;
+import mir.interview.backend.service.DbService;
 import ratpack.server.RatpackServer;
 
 public class Main {
 
     public static void main(String[] args) throws Exception {
+        DbService dbService = new DbService();
+
         RatpackServer.start(spec -> spec
             .handlers(chain -> chain
-                .prefix("", pchain -> pchain
-                    .all(ctx -> ctx
-                        .byMethod(method -> method
-                            .get(() -> ctx.render("Received GET request"))
-                            .post(() -> ctx.render("Received POST request"))
-                            .put(() -> ctx.render("Received PUT request"))
-                            .delete(() -> ctx.render("Received DELETE request"))
-                        )
-                    )
+                .path("login", new LoginHandler(dbService))
+                .path("balance", new BalanceHandler(dbService))
+                .path("spend", new SpendHandler(dbService))
+                .path("transactions", new TransactionHandler(dbService))
                 )
-            )
-        );
+            );
     }
 }
