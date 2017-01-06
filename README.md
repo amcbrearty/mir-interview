@@ -1,5 +1,12 @@
 # mir-interview
-MIR Interview
+
+## Notes
+* All development done on a mac using IntelliJ IDE.
+* Aerospike was installed on a local vagrant instance 
+* configured aerospike serverPort = 3000
+* configured aerospike serverHost = "172.28.128.3"
+* default rat pack host localhost
+* default rat pack host 5050
 
 ## Time spent
 https://wakatime.com/@f49e45c4-505e-4b31-82fa-9f3dacc6dada/projects/zwrqhznlfj?start=2016-12-30&end=2017-01-06    
