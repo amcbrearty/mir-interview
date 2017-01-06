@@ -107,7 +107,7 @@ public class DbService {
             Double amount = Double.valueOf(items.record.bins.get(AMOUNT_BIN).toString());
             String currency = items.record.bins.get(CURRENCY_BIN).toString();
 
-            Spend spend = new Spend(null, description, amount, currency);
+            Spend spend = new Spend(date, description, amount, currency);
 
             transactions.add(spend);
         });

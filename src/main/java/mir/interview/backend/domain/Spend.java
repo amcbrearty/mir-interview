@@ -1,17 +1,15 @@
 package mir.interview.backend.domain;
 
-import java.util.Date;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class Spend {
 
-    private Date date;
+    private String date;
     private String description;
     private Double amount;
     private String currency;
 
-    public Spend(@JsonProperty("date") Date date,
+    public Spend(@JsonProperty("date") String date,
                  @JsonProperty("description") String description,
                  @JsonProperty("amount") Double amount,
                  @JsonProperty("currency") String currency) {
@@ -22,7 +20,7 @@ public class Spend {
         this.currency = currency;
     }
 
-    public Date getDate() {
+    public String getDate() {
         return this.date;
     }
 

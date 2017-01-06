@@ -3,6 +3,9 @@ package mir.interview.backend.handler;
 import static io.restassured.path.json.JsonPath.with;
 import static org.junit.Assert.assertEquals;
 
+import java.util.List;
+
+import mir.interview.backend.domain.Spend;
 import org.junit.Test;
 import ratpack.http.HttpMethod;
 import ratpack.http.client.ReceivedResponse;
@@ -44,7 +47,10 @@ public class TransactionHandlerTest extends BaseHandlerTest {
             ReceivedResponse transactionsResponse = httpClient
                 .request("transactions", requestSpec -> requestSpec.getHeaders().add("Authorization", "Bearer " + token));
 
-            System.out.println(transactionsResponse.getBody().getText());
+            List<Spend> transactions = with(transactionsResponse.getBody().getText()).getList("$", Spend.class);
+
+            assertEquals("unexpected transaction present", 2, transactions.size());
+            assertEquals(2, transactions.size());
         });
     }
 
